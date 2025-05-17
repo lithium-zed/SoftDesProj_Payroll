@@ -3,6 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 payroll-cle-firebase-adminsdk-fbsvc-f2a423f709.json
+.idea/workspace.xml
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
