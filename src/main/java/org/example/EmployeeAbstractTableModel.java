@@ -7,7 +7,7 @@ public class EmployeeAbstractTableModel extends AbstractTableModel {
 
     ArrayList<Employee> employees;
 
-    String []columns = {"FullName", "Employee ID", "Department", "Salary", "Time-In", "Time-Out"};
+    String []columns = {"FullName", "Employee ID", "Department", "Salary", "Hours Worked"};
     public EmployeeAbstractTableModel(){
         employees = new ArrayList<>();
     }
@@ -40,12 +40,8 @@ public class EmployeeAbstractTableModel extends AbstractTableModel {
         }else if (columnIndex == 3){
             return employee.getSalary();
         }else if (columnIndex == 4){
-            return employee.getTimeIn();
-        }else if (columnIndex == 5){
-            return employee.getTimeOut();
-        }else{
-            return null;
+            return employee.getHoursWorked();
         }
-
+        return null;
     }
 }

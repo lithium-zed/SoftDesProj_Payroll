@@ -2,21 +2,19 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class EmployeeManagementFrame extends JFrame {
+public class EmployeeRecordsFrame extends JFrame {
     JPanel panel1, panel2;
     Container container;
-    JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel,TimeLabel;
-    JTextField FullNameField, EmployeeIDField, DepartmentField, EditField,TimeField;
-    JButton AddButton, DeleteButton, EditButton,InButton,OutButton;
+    JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel;
+    JTextField FullNameField, EmployeeIDField, DepartmentField, EditField;
+    JButton AddButton, DeleteButton, EditButton;
     JTable Table;
     EmployeeAbstractTableModel Model;
 
     GridBagLayout layout;
 
-    public EmployeeManagementFrame(){
+    public EmployeeRecordsFrame(){
         layout = new GridBagLayout();
         container = this.getContentPane();
         container.setLayout(layout);
@@ -50,11 +48,6 @@ public class EmployeeManagementFrame extends JFrame {
 
         panel2 = new JPanel();
 
-        TimeLabel = new JLabel("Time:");
-        TimeField = new JTextField(10);
-
-        InButton = new JButton("In");
-        OutButton = new JButton("Out");
 
         EditLabel = new JLabel("Edit:");
         EditField = new JTextField(15);
@@ -65,12 +58,6 @@ public class EmployeeManagementFrame extends JFrame {
         DeleteButton = new JButton("Delete");
         DeleteButton.setMnemonic('D');
 
-
-        addToPanel(panel2, TimeLabel, 0,0);
-        addToPanel(panel2, TimeField, 1,0);
-
-        addToPanel(panel2, InButton, 2,0);
-        addToPanel(panel2, OutButton, 3,0);
 
         addToPanel(panel2, EditLabel, 4,0);
         addToPanel(panel2, EditField, 5,0);
@@ -98,7 +85,7 @@ public class EmployeeManagementFrame extends JFrame {
         this.pack();
         this.setVisible(true);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setTitle("Employee Management");
+        this.setTitle("Employee Records");
     }
 
     public void addToPanel(JPanel panel, Component component,
