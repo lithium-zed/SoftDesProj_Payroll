@@ -2,16 +2,15 @@ package org.example;
 
 public class Employee {
 
-    String FullName, EmployeeID, Department, TimeIn, TimeOut;
-    double Salary;
+    String FullName, EmployeeID, Department;
+    double Salary, hoursWorked;
 
-    public Employee(String fullName, String employeeID, String department, double salary, String timeIn, String timeOut) {
-        FullName = fullName;
-        EmployeeID = employeeID;
-        Department = department;
-        Salary = salary;
-        TimeIn = timeIn;
-        TimeOut = timeOut;
+    public Employee(String fullName, String employeeID, String department, double salary, double hoursWorked) {
+        this.FullName = fullName;
+        this.EmployeeID = employeeID;
+        this.Department = department;
+        this.Salary = salary;
+        this.hoursWorked = hoursWorked;
     }
 
     public String getFullName() {
@@ -38,20 +37,12 @@ public class Employee {
         Department = department;
     }
 
-    public String getTimeIn() {
-        return TimeIn;
+    public double getHoursWorked() {
+        return hoursWorked;
     }
 
-    public void setTimeIn(String timeIn) {
-        TimeIn = timeIn;
-    }
-
-    public String getTimeOut() {
-        return TimeOut;
-    }
-
-    public void setTimeOut(String timeOut) {
-        TimeOut = timeOut;
+    public void setHoursWorked(double hoursWorked) {
+        this.hoursWorked = hoursWorked;
     }
 
     public double getSalary() {
