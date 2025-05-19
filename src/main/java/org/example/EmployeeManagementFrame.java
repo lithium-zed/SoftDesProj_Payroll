@@ -14,6 +14,7 @@ public class EmployeeManagementFrame extends JFrame {
     JTable Table;
     EmployeeAbstractTableModel Model;
 
+
     GridBagLayout layout;
 
     public EmployeeManagementFrame(){
@@ -21,6 +22,11 @@ public class EmployeeManagementFrame extends JFrame {
         container = this.getContentPane();
         container.setLayout(layout);
 
+        Model = new EmployeeAbstractTableModel();
+        Table = new JTable(Model);
+
+
+        Buttons buttons = new Buttons(Model,Table);
         panel1 = new JPanel();
 
         FullNameLabel = new JLabel("FullName:");
@@ -81,13 +87,24 @@ public class EmployeeManagementFrame extends JFrame {
 
         addToContainer(panel2, 0,1);
 
-        Model = new EmployeeAbstractTableModel();
-        Table = new JTable(Model);
 
         Table.getTableHeader().setReorderingAllowed(false);
         Table.getTableHeader().setResizingAllowed(false);
 
         addToContainer(new JScrollPane(Table), 0,2);
+
+        AddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String fullName = FullNameField.getText();
+                String id = EmployeeIDField.getText();
+                String dept = DepartmentField.getText();
+                buttons.addEmployee(fullName,id,dept);
+                FullNameField.setText("");
+                EmployeeIDField.setText("");
+                DepartmentField.setText("");
+            }
+        });
 
         this.setSize(700, 400);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -120,6 +137,7 @@ public class EmployeeManagementFrame extends JFrame {
         constraints.insets = new Insets(3,3,3,3);
         this.add(component, constraints);
     }
+
 
 
 

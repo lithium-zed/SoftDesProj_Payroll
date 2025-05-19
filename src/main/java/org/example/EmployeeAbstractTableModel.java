@@ -48,4 +48,14 @@ public class EmployeeAbstractTableModel extends AbstractTableModel {
         }
 
     }
+
+    public void addEmployee(String fullname, String employeeID, String department) {
+    double salary = 0.0;
+    String timeIn = "";
+    String timeOut = "";
+
+     Employee employee = new Employee(fullname,employeeID,department,salary,timeIn,timeOut);
+     employees.add(employee);
+     fireTableRowsInserted(employees.size() -1, employees.size() - 1);
+    }
 }
