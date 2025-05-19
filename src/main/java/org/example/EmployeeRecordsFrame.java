@@ -2,12 +2,14 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class EmployeeRecordsFrame extends JFrame {
+public class EmployeeRecordsFrame extends JFrame implements ActionListener {
     JPanel panel1, panel2;
     Container container;
-    JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel;
-    JTextField FullNameField, EmployeeIDField, DepartmentField, EditField;
+    JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel, SalaryLabel;
+    JTextField FullNameField, EmployeeIDField, DepartmentField, EditField, SalaryField;
     JButton AddButton, DeleteButton, EditButton;
     JTable Table;
     EmployeeAbstractTableModel Model;
@@ -30,8 +32,12 @@ public class EmployeeRecordsFrame extends JFrame {
         DepartmentLabel = new JLabel("Department:");
         DepartmentField = new JTextField(15);
 
+        SalaryLabel = new JLabel("Salary:");
+        SalaryField = new JTextField(15);
+
         AddButton = new JButton("Add");
         AddButton.setMnemonic('A');
+        AddButton.addActionListener(this);
 
         addToPanel(panel1, FullNameLabel,0,0);
         addToPanel(panel1, FullNameField,1,0);
@@ -42,7 +48,10 @@ public class EmployeeRecordsFrame extends JFrame {
         addToPanel(panel1, DepartmentLabel,4,0);
         addToPanel(panel1, DepartmentField,5,0);
 
-        addToPanel(panel1, AddButton,6,0);
+        addToPanel(panel1, SalaryLabel, 0, 1);
+        addToPanel(panel1, SalaryField, 1, 1);
+
+        addToPanel(panel1, AddButton,6,1);
 
         addToContainer(panel1,0,0);
 
@@ -54,10 +63,11 @@ public class EmployeeRecordsFrame extends JFrame {
 
         EditButton = new JButton("Edit");
         EditButton.setMnemonic('E');
+        EditButton.addActionListener(this);
 
         DeleteButton = new JButton("Delete");
         DeleteButton.setMnemonic('D');
-
+        DeleteButton.addActionListener(this);
 
         addToPanel(panel2, EditLabel, 4,0);
         addToPanel(panel2, EditField, 5,0);
@@ -76,7 +86,7 @@ public class EmployeeRecordsFrame extends JFrame {
 
         addToContainer(new JScrollPane(Table), 0,2);
 
-        this.setSize(700, 400);
+        this.setSize(800,450);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.getWidth()) / 2;
         int y = (screenSize.height - this.getHeight()) / 2;
@@ -108,7 +118,74 @@ public class EmployeeRecordsFrame extends JFrame {
         this.add(component, constraints);
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == AddButton) {
+            String fullName = FullNameField.getText();
+            String employeeID = EmployeeIDField.getText();
+            String department = DepartmentField.getText();
+            String salaryText = SalaryField.getText();
 
+            try {
+                double salary = Double.parseDouble(salaryText);
+                Employee newEmployee = new Employee(fullName, employeeID, department, salary);
+                Model.addEmployee(newEmployee);
 
-
+                FullNameField.setText("");
+                EmployeeIDField.setText("");
+                DepartmentField.setText("");
+                SalaryField.setText("");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid Salary format. Please enter a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (e.getSource() == DeleteButton) {
+            int selectedRow = Table.getSelectedRow();
+            if (selectedRow >= 0) {
+                Model.deleteEmployee(selectedRow);
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a row to delete.", "Selection Error", JOptionPane.WARNING_MESSAGE);
+            }
+        } else if (e.getSource() == EditButton) {
+            int selectedRow = Table.getSelectedRow();
+            if (selectedRow >= 0) {
+                String editValue = EditField.getText();
+                if(Table.getSelectedColumn() == 0){
+                    Employee employeeToUpdate = new Employee(editValue,
+                            (String) Model.getValueAt(selectedRow, 1),
+                            (String) Model.getValueAt(selectedRow, 2),
+                            (double) Model.getValueAt(selectedRow, 3));
+                    Model.updateEmployee(selectedRow, employeeToUpdate);
+                } else if (Table.getSelectedColumn() == 1) {
+                    Employee employeeToUpdate = new Employee(
+                            (String)Model.getValueAt(selectedRow,0),
+                            editValue,
+                            (String) Model.getValueAt(selectedRow, 2),
+                            (double) Model.getValueAt(selectedRow, 3));
+                    Model.updateEmployee(selectedRow, employeeToUpdate);
+                }else if (Table.getSelectedColumn() == 2) {
+                    Employee employeeToUpdate = new Employee(
+                            (String)Model.getValueAt(selectedRow,0),
+                            (String) Model.getValueAt(selectedRow, 1),
+                            editValue,
+                            (double) Model.getValueAt(selectedRow, 3));
+                    Model.updateEmployee(selectedRow, employeeToUpdate);
+                } else if (Table.getSelectedColumn() == 3) {
+                    try{
+                        double editSalary = Double.parseDouble(editValue);
+                        Employee employeeToUpdate = new Employee(
+                                (String)Model.getValueAt(selectedRow,0),
+                                (String) Model.getValueAt(selectedRow, 1),
+                                (String) Model.getValueAt(selectedRow, 2),
+                                editSalary);
+                        Model.updateEmployee(selectedRow, employeeToUpdate);
+                    }catch (NumberFormatException ex){
+                        JOptionPane.showMessageDialog(this, "Invalid Salary format. Please enter a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                EditField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a row to edit.", "Selection Error", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
 }

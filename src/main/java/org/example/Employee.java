@@ -12,6 +12,12 @@ public class Employee {
         this.Salary = salary;
         this.hoursWorked = hoursWorked;
     }
+    public Employee(String fullName, String employeeID, String department, double salary) {
+        this.FullName = fullName;
+        this.EmployeeID = employeeID;
+        this.Department = department;
+        this.Salary = salary;
+    }
 
     public String getFullName() {
         return FullName;

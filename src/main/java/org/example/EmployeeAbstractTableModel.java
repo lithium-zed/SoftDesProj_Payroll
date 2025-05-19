@@ -11,6 +11,22 @@ public class EmployeeAbstractTableModel extends AbstractTableModel {
     public EmployeeAbstractTableModel(){
         employees = new ArrayList<>();
     }
+    public void addEmployee(Employee employee){
+        employees.add(employee);
+        fireTableDataChanged();
+    }
+    public void deleteEmployee(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < employees.size()) {
+            employees.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
+    public void updateEmployee(int rowIndex, Employee employee) {
+        if (rowIndex >= 0 && rowIndex < employees.size()) {
+            employees.set(rowIndex, employee);
+            fireTableRowsUpdated(rowIndex, rowIndex);
+        }
+    }
 
     @Override
     public String getColumnName(int index){
