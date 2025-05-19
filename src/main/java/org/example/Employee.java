@@ -2,8 +2,9 @@ package org.example;
 
 public class Employee {
 
-    String FullName, EmployeeID, Department;
+    String FullName, EmployeeID, Department, time_in, time_out;
     double Salary, hoursWorked;
+    private boolean isWorking;
 
     public Employee(String fullName, String employeeID, String department, double salary, double hoursWorked) {
         this.FullName = fullName;
@@ -17,6 +18,30 @@ public class Employee {
         this.EmployeeID = employeeID;
         this.Department = department;
         this.Salary = salary;
+    }
+
+    public void setWorking(boolean working) {
+        isWorking = working;
+    }
+
+    public boolean isWorking() {
+        return isWorking;
+    }
+
+    public String getTime_in() {
+        return time_in;
+    }
+
+    public void setTime_in(String time_in) {
+        this.time_in = time_in;
+    }
+
+    public String getTime_out() {
+        return time_out;
+    }
+
+    public void setTime_out(String time_out) {
+        this.time_out = time_out;
     }
 
     public String getFullName() {
