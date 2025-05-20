@@ -160,7 +160,6 @@ public class AttendanceFrame extends JFrame implements ActionListener {
                     addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-in at %s", employeeID, formattedTime));
                     getEmployee().setWorking(true);
                     getEmployee().setTime_in(formattedTime);
-                    System.out.println(getEmployee().isWorking());
                 } else {
                     JOptionPane.showMessageDialog(null, "Employee does not exist", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -180,7 +179,16 @@ public class AttendanceFrame extends JFrame implements ActionListener {
                     addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-out at %s", employeeID, formattedTime));
                     getEmployee().setWorking(false);
                     getEmployee().setTime_out(formattedTime);
-                    getEmployee().setHoursWorked(calculateTimeElapsed(getEmployee().getTime_in(), getEmployee().getTime_out()));
+
+                    if(getEmployee().getHoursWorked() > 0){
+                        double currentHours = getEmployee().getHoursWorked();
+                        currentHours += calculateTimeElapsed(getEmployee().getTime_in(), getEmployee().getTime_out());
+                        getEmployee().setHoursWorked(currentHours);
+                    }else{
+                        getEmployee().setHoursWorked(calculateTimeElapsed(getEmployee().getTime_in(), getEmployee().getTime_out()));
+                    }
+
+                    employeeList.fireTableDataChanged();
                 } else {
                     JOptionPane.showMessageDialog(null, "Employee does not exist", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -192,10 +200,9 @@ public class AttendanceFrame extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        EmployeeAbstractTableModel tableModel = new EmployeeAbstractTableModel();
-        AttendanceFrame frame = new AttendanceFrame(tableModel);
-        tableModel.addEmployee(new Employee("John","123","Secretary",5000));
-        tableModel.addEmployee(new Employee("Mike","321","Secretary",5000));
+        EmployeeRecordsFrame employeeRecordsFrame = new EmployeeRecordsFrame();
+        AttendanceFrame frame = new AttendanceFrame(employeeRecordsFrame.Model);
+
 
     }
 }
