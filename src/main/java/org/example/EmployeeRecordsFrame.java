@@ -199,7 +199,7 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a row to edit.", "Selection Error", JOptionPane.WARNING_MESSAGE);
             }
         } else if(e.getSource() == AttendanceButton){
-            AttendanceFrame attendanceFrame = new AttendanceFrame();
+            AttendanceFrame attendanceFrame = new AttendanceFrame(this.Model);
             attendanceFrame.setVisible(true);
         } else if (e.getSource() == PayrollButton){
             PayrollFrame payrollFrame = new PayrollFrame();
