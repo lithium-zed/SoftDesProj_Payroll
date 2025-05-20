@@ -1,0 +1,55 @@
+Formulas for Compliance
+x = Monthly Salary * 12
+
+SSS{
+Ranges from 5k to 35k
+if lower than 5k, still use 5k. If higher than 35k, use 35k
+Employee pays 5% while employer pays 10%
+}
+Philhealth{
+Ranges from 10k to 100k
+same rules as above applies
+5% but will be halved by both employee and employer so 2.5% each
+}
+BIR (get w){
+if x ranges between 0 to 250k {
+no monthly withholding tax
+w = 0
+}
+if x ranges between 250,001 to 400k{
+y = x - 250k
+z = y * 15% (Annual Tax)
+w = z / 12 (Monthly Withholding tax)
+}
+if x 400,001 to 800k{
+base tax = 22,500
+y = x - 400k
+z = 22,500 + (y * 20%)
+w =  z / 12
+}
+if x 800,001 to 2M{
+y = x - 800k
+z = 102,500 + (y * 25%)
+w =  z / 12
+}
+if x 2M and 1 to 8M{
+y = x - 2M
+z = 402,500+ (y * 30%)
+w =  z / 12
+}
+if x > 8M{
+y = x - 8M
+z = 2,202,500 + (y * 35%)
+w =  z / 12
+}
+}
+PAG-IBIG{
+Ranges from 5k to 10k
+Same rules as above applies if maximum however if less than 5k, employee does not have to pay but employer pays the full amount.
+Employee pays 2% as well as employer
+employee + employer
+}
+Net Pay{
+x = SSS + BIR + Pag-IBIG + Philhealth
+z = salary - x
+}

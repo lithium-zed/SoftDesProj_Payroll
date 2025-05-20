@@ -5,8 +5,5 @@ public class Main {
 
         EmployeeRecordsFrame EmployeeRecordsFrame = new EmployeeRecordsFrame();
 
-
-
-
     }
 }
