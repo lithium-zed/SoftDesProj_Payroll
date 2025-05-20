@@ -10,7 +10,7 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
     Container container;
     JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel, SalaryLabel;
     JTextField FullNameField, EmployeeIDField, DepartmentField, EditField, SalaryField;
-    JButton AddButton, DeleteButton, EditButton;
+    JButton AddButton, DeleteButton, EditButton,PayrollButton,AttendanceButton;
     JTable Table;
     EmployeeAbstractTableModel Model;
 
@@ -69,12 +69,24 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
         DeleteButton.setMnemonic('D');
         DeleteButton.addActionListener(this);
 
+        AttendanceButton = new JButton("Attendance");
+        AttendanceButton.setMnemonic('A');
+        AttendanceButton.addActionListener(this);
+
+        PayrollButton = new JButton("Payroll");
+        PayrollButton.setMnemonic('P');
+        PayrollButton.addActionListener(this);
+
         addToPanel(panel2, EditLabel, 4,0);
         addToPanel(panel2, EditField, 5,0);
 
         addToPanel(panel2, EditButton, 6,0);
 
         addToPanel(panel2, DeleteButton, 7,0);
+
+        addToPanel(panel2,AttendanceButton,7,0);
+
+        addToPanel(panel2,PayrollButton,8,0);
 
         addToContainer(panel2, 0,1);
 
@@ -186,6 +198,12 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a row to edit.", "Selection Error", JOptionPane.WARNING_MESSAGE);
             }
+        } else if(e.getSource() == AttendanceButton){
+            AttendanceFrame attendanceFrame = new AttendanceFrame();
+            attendanceFrame.setVisible(true);
+        } else if (e.getSource() == PayrollButton){
+            PayrollFrame payrollFrame = new PayrollFrame();
+            payrollFrame.setVisible(true);
         }
     }
 }

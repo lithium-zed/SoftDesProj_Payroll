@@ -55,7 +55,7 @@ public class PayrollFrame extends JFrame {
 
         this.pack();
         this.setVisible(true);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setTitle("Payroll");
     }
 
