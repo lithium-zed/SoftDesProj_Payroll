@@ -137,6 +137,17 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
             String employeeID = EmployeeIDField.getText();
             String department = DepartmentField.getText();
             String salaryText = SalaryField.getText();
+            boolean exists =false;
+            for (int i = 0; i < Model.getRowCount(); i++){
+                String existing = (String) Model.getValueAt(i,1);
+                if (existing.equals(employeeID)){
+                    exists=true;
+                    break;
+                }
+            }
+            if(exists){
+                JOptionPane.showMessageDialog(null,"Employee with ID already exists");
+            } else{
 
             try {
                 double salary = Double.parseDouble(salaryText);
@@ -149,7 +160,7 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
                 SalaryField.setText("");
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid Salary format. Please enter a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
+            }}
         } else if (e.getSource() == DeleteButton) {
             int selectedRow = Table.getSelectedRow();
             if (selectedRow >= 0) {
@@ -202,7 +213,7 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
             AttendanceFrame attendanceFrame = new AttendanceFrame(this.Model);
             attendanceFrame.setVisible(true);
         } else if (e.getSource() == PayrollButton){
-            PayrollFrame payrollFrame = new PayrollFrame();
+            PayrollFrame payrollFrame = new PayrollFrame(this.Model);
             payrollFrame.setVisible(true);
         }
     }
