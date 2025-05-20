@@ -81,7 +81,7 @@ public class AttendanceFrame extends JFrame implements ActionListener {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setTitle("Attendance Checker");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     public void addToCheckerPanel(Component component, int gridx, int gridy, int width){
         GridBagConstraints gbc = new GridBagConstraints();
