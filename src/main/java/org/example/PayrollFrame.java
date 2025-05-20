@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PayrollFrame extends JFrame {
 
@@ -14,8 +16,10 @@ public class PayrollFrame extends JFrame {
     JScrollPane CalculationScrollPane;
     JPanel panel;
 
-    public PayrollFrame(){
+    private EmployeeAbstractTableModel model;
 
+    public PayrollFrame(EmployeeAbstractTableModel model){
+        this.model = model;
         layout = new GridBagLayout();
         container = this.getContentPane();
         container.setLayout(layout);
@@ -57,7 +61,28 @@ public class PayrollFrame extends JFrame {
         this.setVisible(true);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setTitle("Payroll");
+
+        CalculateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String entered = EmployeeIDField.getText();
+                boolean found = false;
+                for (int i = 0; i < PayrollFrame.this.model.getRowCount(); i++){
+                    String id = (String) PayrollFrame.this.model.getValueAt(i,1);
+                    if (entered.equals(id)){
+                        found = true;
+                        CalculationArea.setText("Employee ID Found");
+                        break;
+                    }
+                }
+                if (!found){
+                    JOptionPane.showMessageDialog(null,"ID does not exist");
+                    CalculationArea.setText("Enter ID");
+                }
+            }
+        });
     }
+
 
     public void addToContainer(Component component,
                                int gridx, int gridy) {
