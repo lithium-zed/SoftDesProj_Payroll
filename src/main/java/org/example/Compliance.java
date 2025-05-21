@@ -1,17 +1,26 @@
 package org.example;
 
 public class Compliance {
-   private double monthly, SSS, BIR, Philhealth, Pagibig, netpay, annually;
+   private double gross, SSS, BIR, Philhealth, Pagibig, netpay, annually,monthly,totaldeductions;
 
-   public Compliance(double monthly){
-       this.monthly = monthly;
+   public Compliance(double gross){
+       this.gross = gross;
        this.annually = monthly * 12;
-       this.SSS = computeSSS();
-       this.Philhealth = computePhilhealth();
-       this.Pagibig = computePagIbig();
-       computeBir();
+       this.SSS = computeSSS(gross);
+       this.Philhealth = computePhilhealth(gross);
+       this.Pagibig = computePagIbig(gross);
+       this.BIR = computeBir(gross);
+
        computeNetpay();
    }
+
+    public double getTotaldeductions() {
+        return totaldeductions;
+    }
+
+    public void setTotaldeductions(double totaldeductions) {
+        this.totaldeductions = totaldeductions;
+    }
 
     public double getMonthly() {
         return monthly;
@@ -68,61 +77,73 @@ public class Compliance {
     public void setAnnually(double annually) {
         this.annually = annually;
     }
-    public double computeSSS(){
+
+
+    public double computeSSS(double gross){
      double msc = 0;
-     if (monthly >= 5000 || monthly <= 35000 ){
-      msc = monthly * 0.05;
-     }else if (monthly < 5000){
+
+     if (gross >= 5000 && gross <= 35000 ){
+      msc = gross * 0.05;
+
+     }else if (gross < 5000){
          msc = 5000 * 0.05;
-         return msc;
-     } else if (monthly > 35000){
+     } else if (gross > 35000){
           msc = 35000 * 0.05;
-         return msc;
      }
-        return msc;
+       return msc;
     }
-    public double computePhilhealth(){
+
+
+
+    public double computePhilhealth(double gross){
        double msc = 0;
-       if (monthly < 10000){
+       if (gross < 10000){
            msc = 10000 * 0.025;
-       } else if (monthly > 100000){
+       } else if (gross > 100000){
            msc = 100000 * 0.025;
        } else {
-           msc = monthly * 0.025;
+           msc = gross * 0.025;
        }
        return msc;
     }
-    public double computePagIbig(){
+    public double computePagIbig(double gross){
        double msc = 0;
-       if (monthly < 5000){
+       if (gross < 5000){
            msc = 0;
        }
-       else if (monthly > 10000){
+       else if (gross > 10000){
            msc = 10000 * 0.02;
        } else {
-           msc = monthly * 0.02;
+           msc = gross * 0.02;
        }
        return msc;
     }
-    public void computeBir(){
-       double annual = monthly * 12;
+    public double computeBir(double gross){
+//       double annual = monthly * 12;
        double annualtax = 0;
-   if (annual <= 250000){
+
+   if (gross <= 250000){
        annualtax = 0;
-   } else if (annual <= 400000){
-       annualtax = annual * 0.15;
-   } else if (annual <= 800000){
-       annualtax = 22500 + (annual - 400000) * 0.20;
-   } else if (annual <= 2000000){
-       annualtax = 102500 + (annual - 800000) * 0.25;
-   } else if (annual <= 8000000){
-       annualtax = 402500 + (annual - 2000000) * 0.30;
+
+   } else if (gross <= 400000){
+       annualtax = gross * 0.15;
+
+   } else if (gross <= 800000){
+       annualtax = 22500 + (gross - 400000) * 0.20;
+   } else if (gross <= 2000000){
+       annualtax = 102500 + (gross - 800000) * 0.25;
+   } else if (gross <= 8000000){
+       annualtax = 402500 + (gross - 2000000) * 0.30;
    }else {
-       annualtax = 2202500 + (annual - 8000000) * 0.35;
+       annualtax = 2202500 + (gross - 8000000) * 0.35;
    }
+
        this.BIR = annualtax / 12;
+
+        return annualtax;
     }
     public void computeNetpay(){
-       this.netpay = this.monthly - (this.SSS + this.Philhealth + this.Pagibig + this.BIR);
+       totaldeductions = this.SSS + this.Philhealth + this.Pagibig + this.BIR;
+       this.netpay = this.gross - (totaldeductions);
     }
 }
