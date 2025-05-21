@@ -37,7 +37,6 @@ public class PayrollFrame extends JFrame {
 
         CalculationScrollPane = new JScrollPane(CalculationArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-
         panel = new JPanel();
 
         panel.add(EmployeeID);
@@ -70,43 +69,12 @@ public class PayrollFrame extends JFrame {
                     Employee employee = model.employees.get(index);
 
                     double monthlySalary = employee.getSalary();
-                    double HourlyRate = monthlySalary / 240;
+                    double HourlyRate = monthlySalary / 160;
                     double SalaryBasedHours = HourlyRate * employee.getHoursWorked();
 
+                    Compliance compliance = new Compliance(SalaryBasedHours);
+
                     double annualSalary = monthlySalary * 12;
-
-                    double sssBase = Math.max(5000, Math.min(monthlySalary, 35000));
-                    double sssEmployee = sssBase * 0.05;
-
-                    double philhealthBase = Math.max(10000, Math.min(monthlySalary, 100000));
-                    double philhealthEmployee = (philhealthBase * 0.05) / 2;
-
-                    double pagibigEmployee;
-                    if (monthlySalary >= 5000) {
-                        double pagibigBase = Math.min(monthlySalary, 10000);
-                        pagibigEmployee = pagibigBase * 0.02;
-                    } else {
-                        pagibigEmployee = 0;
-                    }
-
-                    double monthlyTax;
-
-                    if (annualSalary <= 250000) {
-                        monthlyTax = 0;
-                    } else if (annualSalary <= 400000) {
-                        monthlyTax = ((annualSalary - 250000) * 0.15) / 12;
-                    } else if (annualSalary <= 800000) {
-                        monthlyTax = (22500 + (annualSalary - 400000) * 0.20) / 12;
-                    } else if (annualSalary <= 2000000) {
-                        monthlyTax = (102500 + (annualSalary - 800000) * 0.25) / 12;
-                    } else if (annualSalary <= 8000000) {
-                        monthlyTax = (402500 + (annualSalary - 2000000) * 0.30) / 12;
-                    } else {
-                        monthlyTax = (2202500 + (annualSalary - 8000000) * 0.35) / 12;
-                    }
-
-                    double totalDeductions = sssEmployee + philhealthEmployee + pagibigEmployee + monthlyTax;
-                    double netPay = SalaryBasedHours - totalDeductions;
 
                     StringBuilder sb = new StringBuilder();
                     sb.append("PAYROLL SUMMARY\n");
@@ -117,18 +85,17 @@ public class PayrollFrame extends JFrame {
                     sb.append("Annual Salary:\t\t₱").append(String.format("%.2f", annualSalary)).append("\n\n");
 
                     sb.append("DEDUCTIONS:\n");
-                    sb.append("SSS (5%):\t\t₱").append(String.format("%.2f", sssEmployee)).append("\n");
-                    sb.append("PhilHealth (2.5%):\t₱").append(String.format("%.2f", philhealthEmployee)).append("\n");
-                    sb.append("PAG-IBIG (2%):\t\t₱").append(String.format("%.2f", pagibigEmployee)).append("\n");
-                    sb.append("BIR Monthly Tax:\t₱").append(String.format("%.2f", monthlyTax)).append("\n");
+                    sb.append("SSS (5%):\t\t₱").append(String.format("%.2f", compliance.getSSS())).append("\n");
+                    sb.append("PhilHealth (2.5%):\t₱").append(String.format("%.2f", compliance.getPhilhealth())).append("\n");
+                    sb.append("PAG-IBIG (2%):\t\t₱").append(String.format("%.2f", compliance.getPagibig())).append("\n");
+                    sb.append("BIR Monthly Tax:\t₱").append(String.format("%.2f", compliance.getMonthly())).append("\n");
                     sb.append("-----------------------------------\n");
-                    sb.append("Total Deductions:\t₱").append(String.format("%.2f", totalDeductions)).append("\n");
-                    sb.append("Net Pay:\t\t₱").append(String.format("%.2f", netPay)).append("\n");
+                    sb.append("Total Deductions:\t₱").append(String.format("%.2f", compliance.getTotaldeductions())).append("\n");
+                    sb.append("Net Pay:\t\t₱").append(String.format("%.2f", compliance.getNetpay())).append("\n");
 
                     CalculationArea.setText(sb.toString());
                 } else {
                     JOptionPane.showMessageDialog(null, "ID does not exist!");
-                    CalculationArea.setText("Employee not found.");
                 }
             }
         });
