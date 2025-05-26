@@ -178,10 +178,7 @@ public class AttendanceFrame extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(null,"You have not timed in yet");
                         return;
                     }
-                    if (getEmployee().getTime_out() != null){
-                        JOptionPane.showMessageDialog(null,"You are currently timed out, please time in");
-                        return;
-                    }
+
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                     String formattedTime = parsedTime.format(formatter);
                     addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-out at %s", employeeID, formattedTime));
