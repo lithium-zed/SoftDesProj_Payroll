@@ -158,7 +158,6 @@ public class AttendanceFrame extends JFrame implements ActionListener {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                     String formattedTime = parsedTime.format(formatter);
                     addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-in at %s", employeeID, formattedTime));
-                    getEmployee().setWorking(true);
                     getEmployee().setTime_in(formattedTime);
                 } else {
                     JOptionPane.showMessageDialog(null, "Employee does not exist", "Error", JOptionPane.ERROR_MESSAGE);
@@ -182,7 +181,7 @@ public class AttendanceFrame extends JFrame implements ActionListener {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                     String formattedTime = parsedTime.format(formatter);
                     addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-out at %s", employeeID, formattedTime));
-                    getEmployee().setWorking(false);
+
                     getEmployee().setTime_out(formattedTime);
 
 
