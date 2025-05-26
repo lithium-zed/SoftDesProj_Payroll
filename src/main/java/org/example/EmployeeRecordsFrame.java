@@ -11,12 +11,15 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
     JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel, SalaryLabel;
     JTextField FullNameField, EmployeeIDField, DepartmentField, EditField, SalaryField;
     JButton AddButton, DeleteButton, EditButton,PayrollButton,AttendanceButton,YearendButton;
+    FireStoreDatabase db;
     JTable Table;
     EmployeeAbstractTableModel Model;
 
     GridBagLayout layout;
 
     public EmployeeRecordsFrame(){
+        db = new FireStoreDatabase(this);
+
         layout = new GridBagLayout();
         container = this.getContentPane();
         container.setLayout(layout);
@@ -104,6 +107,7 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
 
         addToContainer(new JScrollPane(Table), 0,2);
 
+        db.getAllEmployeeRecords();
         this.setSize(800,450);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.getWidth()) / 2;
@@ -159,6 +163,8 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
                 double salary = Double.parseDouble(salaryText);
                 Employee newEmployee = new Employee(fullName, employeeID, department, salary);
                 Model.addEmployee(newEmployee);
+
+                db.addEmployee(newEmployee);
 
                 FullNameField.setText("");
                 EmployeeIDField.setText("");
