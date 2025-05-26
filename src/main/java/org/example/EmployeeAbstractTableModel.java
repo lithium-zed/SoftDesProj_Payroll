@@ -21,6 +21,15 @@ public class EmployeeAbstractTableModel extends AbstractTableModel {
             fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
+    public Employee getEmployeeByID(String employeeID) {
+        for (Employee employee : employees) {
+            if (employee.getEmployeeID().equals(employeeID)) {
+                return employee;
+            }
+        }
+        return null; // Employee not found
+    }
+
     public void updateEmployee(int rowIndex, Employee employee) {
         if (rowIndex >= 0 && rowIndex < employees.size()) {
             employees.set(rowIndex, employee);

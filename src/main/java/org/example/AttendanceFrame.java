@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -23,10 +24,12 @@ public class AttendanceFrame extends JFrame implements ActionListener {
         Map<String,String> monthlyLogs;
         BorderLayout layout;
         Container container;
-        private Employee employee;
+        private FireStoreDatabase db;
 
     public AttendanceFrame(EmployeeAbstractTableModel employees) throws HeadlessException {
         employeeList = employees;
+        this.db = FireStoreDatabase.getInstance();
+
         container = this.getContentPane();
         layout = new BorderLayout();
         container.setLayout(layout);
@@ -50,7 +53,9 @@ public class AttendanceFrame extends JFrame implements ActionListener {
         String[] months = {"January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"};
         for (String month : months) {
-            monthlyLogs.put(month, "Logs for " + month + ":\n"); // Initialize with a header
+            String initialLog = "Logs for " + month + ":\n";
+            monthlyLogs.put(month, initialLog);
+            loadMonthlyLogFromFirestore(month);
         }
         dateList = new JComboBox<>(months);
 
@@ -81,7 +86,12 @@ public class AttendanceFrame extends JFrame implements ActionListener {
         });
 
         if (months.length > 0) {
-            dateList.setSelectedIndex(0); // Trigger the ActionListener for the first month
+            int currentMonthIndex = YearMonth.now().getMonthValue() - 1;
+            if (currentMonthIndex >= 0 && currentMonthIndex < months.length) {
+                dateList.setSelectedIndex(currentMonthIndex);
+            } else {
+                dateList.setSelectedIndex(0);
+            }
         }
 
         this.setVisible(true);
@@ -89,6 +99,12 @@ public class AttendanceFrame extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
         this.setTitle("Attendance Checker");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                saveAllMonthlyLogsToFirestore();
+            }
+        });
     }
     public void addToCheckerPanel(Component component, int gridx, int gridy, int width){
         GridBagConstraints gbc = new GridBagConstraints();
@@ -109,23 +125,48 @@ public class AttendanceFrame extends JFrame implements ActionListener {
             }
         }
     }
+    private void loadMonthlyLogFromFirestore(String month) {
+        db.getMonthlyLog(month).thenAccept(logContentFromDb -> {
+            SwingUtilities.invokeLater(() -> {
+                String currentLogContent = "";
 
-    private boolean isExisting(ArrayList<Employee> employees, String ID){
-        for (Employee employee : employees) {
-            if (ID.equals(employee.getEmployeeID())) {
-                setEmployee(employee);
-                return true;
-            }
+                if (logContentFromDb != null) {
+                    String initialHeader = "Logs for " + month + ":\n"; // Changed log format here
+
+                    if (!logContentFromDb.startsWith(initialHeader)) {
+                        currentLogContent = initialHeader + logContentFromDb;
+                    } else {
+                        currentLogContent = logContentFromDb;
+                    }
+                } else {
+
+                    currentLogContent = "Logs for " + month + ":\n";
+                }
+
+                monthlyLogs.put(month, currentLogContent);
+
+                if (dateList.getSelectedItem().equals(month)) {
+                    logsArea.setText(currentLogContent);
+                    logsArea.setCaretPosition(0);
+                }
+            });
+        }).exceptionally(e -> {
+            SwingUtilities.invokeLater(() -> {
+                System.err.println("Failed to load log for " + month + ": " + e.getMessage());
+            });
+            return null;
+        });
+    }
+    private void saveAllMonthlyLogsToFirestore() {
+        for (Map.Entry<String, String> entry : monthlyLogs.entrySet()) {
+            String month = entry.getKey();
+            String logContent = entry.getValue();
+            db.saveMonthlyLog(month, logContent).exceptionally(e -> {
+                System.err.println("Failed to save log for " + month + " on shutdown: " + e.getMessage());
+                return null;
+            });
         }
-        return false;
-    }
-
-    private Employee getEmployee() {
-        return employee;
-    }
-
-    private void setEmployee(Employee employee) {
-        this.employee = employee;
+        System.out.println("Initiated saving all monthly logs to Firestore.");
     }
 
     public double calculateTimeElapsed(String time_in, String time_out){
@@ -147,61 +188,96 @@ public class AttendanceFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String employeeIDInput = employeeID_FL.getText().trim();
+        String timeInputText = time_FL.getText().trim();
+        LocalTime parsedTime = parseTime(timeInputText);
+
+        if (parsedTime == null) {
+            return;
+        }
+
+        // Format the time for database storage (HH:mm:ss)
+        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTimeForDb = parsedTime.format(dbFormatter);
 
         if (e.getSource() == time_in) {
-            String employeeID = employeeID_FL.getText().trim();
-            String timeInText = time_FL.getText().trim();
-            LocalTime parsedTime = parseTime(timeInText);
+            db.getEmployee(employeeIDInput).thenAccept(employee -> {
+                SwingUtilities.invokeLater(() -> {
+                    if (employee != null) {
+                        // Check if timeIn is already set AND timeOut is null (meaning they are currently clocked in)
+                        if (employee.getTime_in() != null && employee.getTime_out() == null) {
+                            JOptionPane.showMessageDialog(this, "Employee " + employeeIDInput + " is already clocked in.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
 
-            if (parsedTime != null) {
-                if (isExisting(employeeList.employees, employeeID)) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                    String formattedTime = parsedTime.format(formatter);
-                    addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-in at %s", employeeID, formattedTime));
-                    getEmployee().setTime_in(formattedTime);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Employee does not exist", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-                this.employeeID_FL.setText("");
-                this.time_FL.setText("");
-            }
+                        db.clockInEmployee(employeeIDInput, formattedTimeForDb).thenRun(() -> {
+                            SwingUtilities.invokeLater(() -> {
+                                addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-in at %s", employeeIDInput, formattedTimeForDb));
 
+                                Employee localEmployee = employeeList.getEmployeeByID(employeeIDInput);
+                                if (localEmployee != null) {
+                                    localEmployee.setTime_in(formattedTimeForDb);
+                                    localEmployee.setTime_out(null); // Explicitly clear time out
+                                    employeeList.fireTableDataChanged();
+                                }
+                                this.employeeID_FL.setText("");
+                                this.time_FL.setText("");
+                            });
+                        }).exceptionally(ex -> {
+                            SwingUtilities.invokeLater(() -> {
+                                JOptionPane.showMessageDialog(this, "Error clocking in employee: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                            });
+                            return null;
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Employee with ID " + employeeIDInput + " does not exist.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+            }).exceptionally(ex -> {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this, "Error checking employee existence: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                });
+                return null;
+            });
         } else if (e.getSource() == time_out) {
-            String employeeID = employeeID_FL.getText().trim();
-            String timeOutText = time_FL.getText().trim();
-            LocalTime parsedTime = parseTime(timeOutText);
+            db.getEmployee(employeeIDInput).thenAccept(employee -> {
+                SwingUtilities.invokeLater(() -> {
+                    if (employee != null) {
+                        // Check if timeIn is not null AND timeOut is null (meaning they are currently clocked in and haven't clocked out yet)
+                        if (employee.getTime_in() == null || employee.getTime_out() != null) {
+                            JOptionPane.showMessageDialog(this, "Employee " + employeeIDInput + " has not timed in yet or is already clocked out.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
 
-            if (parsedTime != null) {
-                if (isExisting(employeeList.employees, employeeID)) {
-                    if(getEmployee().getTime_in() == null){
-                        JOptionPane.showMessageDialog(null,"You have not timed in yet");
-                        return;
+                        db.clockOutEmployee(employeeIDInput, formattedTimeForDb).thenAccept(totalHoursWorked -> {
+                            SwingUtilities.invokeLater(() -> {
+                                addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-out at %s", employeeIDInput, formattedTimeForDb));
+
+                                Employee localEmployee = employeeList.getEmployeeByID(employeeIDInput);
+                                if (localEmployee != null) {
+                                    localEmployee.setTime_out(formattedTimeForDb);
+                                    localEmployee.setHoursWorked(totalHoursWorked);
+                                    employeeList.fireTableDataChanged();
+                                }
+                                this.employeeID_FL.setText("");
+                                this.time_FL.setText("");
+                            });
+                        }).exceptionally(ex -> {
+                            SwingUtilities.invokeLater(() -> {
+                                JOptionPane.showMessageDialog(this, "Error clocking out employee: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                            });
+                            return null;
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Employee with ID " + employeeIDInput + " does not exist.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                    String formattedTime = parsedTime.format(formatter);
-                    addLog((String) dateList.getSelectedItem(), String.format("Employee [%s]: has clocked-out at %s", employeeID, formattedTime));
-
-                    getEmployee().setTime_out(formattedTime);
-
-
-
-                    if(getEmployee().getHoursWorked() > 0){
-                        double currentHours = getEmployee().getHoursWorked();
-                        currentHours += calculateTimeElapsed(getEmployee().getTime_in(), getEmployee().getTime_out());
-                        getEmployee().setHoursWorked(currentHours);
-                    }else{
-                        getEmployee().setHoursWorked(calculateTimeElapsed(getEmployee().getTime_in(), getEmployee().getTime_out()));
-                    }
-
-                    employeeList.fireTableDataChanged();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Employee does not exist", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-                this.employeeID_FL.setText("");
-                this.time_FL.setText("");
-            }
-
+                });
+            }).exceptionally(ex -> {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this, "Error checking employee existence: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                });
+                return null;
+            });
         }
     }
 
