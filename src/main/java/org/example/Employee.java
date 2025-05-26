@@ -5,6 +5,7 @@ public class Employee {
     String FullName, EmployeeID, Department, time_in, time_out;
     double Salary, hoursWorked;
     private boolean isWorking;
+    private double hourlyrate;
 
     public Employee(String fullName, String employeeID, String department, double salary, double hoursWorked) {
         this.FullName = fullName;
@@ -18,6 +19,17 @@ public class Employee {
         this.EmployeeID = employeeID;
         this.Department = department;
         this.Salary = salary;
+    }
+
+    public double getHourlyrate() {
+        return hourlyrate;
+    }
+
+    public void setHourlyrate(double hourlyrate) {
+        this.hourlyrate = hourlyrate;
+    }
+    public double getyearlyrate(double hourlyrate){
+        return hoursWorked * hourlyrate;
     }
 
     public void setWorking(boolean working) {

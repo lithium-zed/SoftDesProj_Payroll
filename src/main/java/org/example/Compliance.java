@@ -5,6 +5,7 @@ public class Compliance {
 
    public Compliance(double gross){
        this.gross = gross;
+       this.monthly = gross;
        this.annually = monthly * 12;
        this.SSS = computeSSS(gross);
        this.Philhealth = computePhilhealth(gross);
@@ -81,6 +82,9 @@ public class Compliance {
 
     public double computeSSS(double gross){
      double msc = 0;
+     if (gross <= 0){
+         return 0;
+     }
 
      if (gross >= 5000 && gross <= 35000 ){
       msc = gross * 0.05;
@@ -97,6 +101,9 @@ public class Compliance {
 
     public double computePhilhealth(double gross){
        double msc = 0;
+       if (gross <= 0){
+           return 0;
+       }
        if (gross < 10000){
            msc = 10000 * 0.025;
        } else if (gross > 100000){
@@ -108,6 +115,9 @@ public class Compliance {
     }
     public double computePagIbig(double gross){
        double msc = 0;
+       if (gross <= 0){
+           return 0;
+       }
        if (gross < 5000){
            msc = 0;
        }

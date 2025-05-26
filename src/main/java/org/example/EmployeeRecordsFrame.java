@@ -10,7 +10,7 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
     Container container;
     JLabel FullNameLabel,EmployeeIDLabel, DepartmentLabel, EditLabel, SalaryLabel;
     JTextField FullNameField, EmployeeIDField, DepartmentField, EditField, SalaryField;
-    JButton AddButton, DeleteButton, EditButton,PayrollButton,AttendanceButton;
+    JButton AddButton, DeleteButton, EditButton,PayrollButton,AttendanceButton,YearendButton;
     JTable Table;
     EmployeeAbstractTableModel Model;
 
@@ -77,6 +77,10 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
         PayrollButton.setMnemonic('P');
         PayrollButton.addActionListener(this);
 
+        YearendButton = new JButton("Year-end Summary");
+        YearendButton.setMnemonic('Y');
+        YearendButton.addActionListener(this);
+
         addToPanel(panel2, EditLabel, 4,0);
         addToPanel(panel2, EditField, 5,0);
 
@@ -87,6 +91,8 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
         addToPanel(panel2,AttendanceButton,7,0);
 
         addToPanel(panel2,PayrollButton,8,0);
+
+        addToPanel(panel2,YearendButton,9,0);
 
         addToContainer(panel2, 0,1);
 
@@ -215,6 +221,9 @@ public class EmployeeRecordsFrame extends JFrame implements ActionListener {
         } else if (e.getSource() == PayrollButton){
             PayrollFrame payrollFrame = new PayrollFrame(this.Model);
             payrollFrame.setVisible(true);
+        } else if (e.getSource() == YearendButton){
+            YearEndFrame yearEndFrame = new YearEndFrame(this.Model);
+            yearEndFrame.setVisible(true);
         }
     }
 }
